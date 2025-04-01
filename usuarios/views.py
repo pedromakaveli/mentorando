@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.contrib.auth.models import User
 # Create your views here.
 
 def cadastro (request):
@@ -17,11 +18,24 @@ def cadastro (request):
         username = dados["username"]
         senha = dados["senha"]
         confirmar_senha = dados["confirmar_senha"]
+        users = User.objects.filter(username=username)
         
-        if senha != confirmar_senha:
+        if not senha == confirmar_senha:
             return render(request, "cadastro.html", context={"msg": "As senhas não conferem"})
+        
+        elif len(senha) < 6:
+            return redirect("cadastro")
+        
+        elif users.exists():
+            return redirect("cadastro")
+        
         else:
-            return render(request, "cadastro.html")
+            User.objects.create_user(
+                username=username,
+                password=senha
+            )
+            
+            return redirect ("/usuarios/login")
 
 def login (request):
     return HttpResponse("Página de Login")
