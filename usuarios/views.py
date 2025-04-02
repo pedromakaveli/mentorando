@@ -44,4 +44,6 @@ def cadastro (request):
             return redirect("login")
 
 def login (request):
-    return render(request, "login.html")
+    
+    if request.method == "GET":
+        return render(request, "login.html")
