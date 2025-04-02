@@ -44,4 +44,4 @@ def cadastro (request):
             return redirect("login")
 
 def login (request):
-    return HttpResponse("Página de Login")
+    return render(request, "login.html")
