@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.messages import constants
 from django.contrib import messages
@@ -47,3 +48,18 @@ def login (request):
     
     if request.method == "GET":
         return render(request, "login.html")
+
+    elif request.method == "POST":
+        
+        usuario = request.POST.get("username")
+        senha = request.POST.get("senha")
+        
+        user = authenticate(username=usuario, password=senha)
+        
+        if user is not None:
+            # A backend authenticated the credentials
+            ...
+        else:
+            # No backend authenticated the credentials
+            messages.add_message(request, messages.ERROR, "Credênciais não conferem.")
+            return redirect("login")
