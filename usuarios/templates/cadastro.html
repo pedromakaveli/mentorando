@@ -21,13 +21,6 @@
   
         <div class="mt-8">
           <div>
-            {% if msg %}
-            
-            <div class="bg-red-400 text-white py-4 px-2 border-2 border-red-950/50 rounded-sm text-center my-12">
-                <p>{{msg}}</p>
-            </div>
-
-            {%endif%}
 
             <form action="{% url 'cadastro' %}" method="POST" class="space-y-6"> {% csrf_token %}
               <div>
