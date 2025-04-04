@@ -3,4 +3,4 @@ from django.http import HttpResponse
 # Create your views here.
 
 def mentorados (request):
-    return HttpResponse("Estou no mentorado")
+    return render(request, 'mentorados.html')
