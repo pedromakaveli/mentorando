@@ -3,4 +3,7 @@ from django.http import HttpResponse
 # Create your views here.
 
 def mentorados (request):
-    return render(request, 'mentorados.html')
+    if request.method == "GET":
+        return render(request, 'mentorados.html')
+    elif request.method == "POST":
+        ...
