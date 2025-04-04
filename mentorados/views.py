@@ -10,12 +10,15 @@ from django.contrib import messages
 def mentorados (request):
     if request.method == "GET":
         navigators = Navigators.objects.filter(user=request.user)
-        return render(request, 'mentorados.html', {'estagios': Mentorados.estagio_choices, 'navigators': navigators})
+        mentorados = Mentorados.objects.filter(user=request.user)
+        
+        return render(request, 'mentorados.html', {'estagios': Mentorados.estagio_choices, 'navigators': navigators, 'mentorados': mentorados})
+    
     elif request.method == "POST":
         nome = request.POST.get("nome")
         estagio = request.POST.get("estagio")
         navigator = request.POST.get("navigator")
-        foto = request.POST.get("foto")
+        foto = request.FILES.get("foto")
         
         mentorado = Mentorados.objects.filter(nome=nome)
         if mentorado.exists():
