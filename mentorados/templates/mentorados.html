@@ -37,7 +37,7 @@
     <div class="max-w-7xl mx-auto py-12">
         <div class="grid grid-cols-2 gap-4">
             <div>
-              <form action="{% url 'mentorados' %}" method="POST"> {% csrf_token %}
+              <form action="{% url 'mentorados' %}" method="POST" enctype="multipart/form-data"> {% csrf_token %}
                 <h2 class="mt-4 text-2xl/9 font-bold tracking-tight text-gray-100">Cadastre seus mentorados</h2> 
                 {% if messages %}
                     {% for message in messages %}
@@ -129,16 +129,17 @@
               <tbody class="divide-y divide-white/5">
                 
                
-                  <tr>
+                {% for mentorado in mentorados %}  
+                <tr>
                     <td class="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
                       <div class="flex items-center gap-x-4">
-                        <img src="#" alt="" class="size-8 rounded-full bg-gray-800">
-                        <div class="truncate text-sm/6 font-medium text-white">Caio Sampaio</div>
+                        <img src="/media/{{mentorado.foto}}" alt="" class="size-8 rounded-full bg-gray-800 object-cover">
+                        <div class="truncate text-sm/6 font-medium text-white">{{mentorado.nome}}</div>
                       </div>
                     </td>
                     <td class="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
                       <div class="flex gap-x-3">
-                        <div class="rounded-md bg-gray-700/40 px-2 py-1 text-xs font-medium text-gray-400 ring-1 ring-inset ring-white/10">10-100k</div>
+                        <div class="rounded-md bg-gray-700/40 px-2 py-1 text-xs font-medium text-gray-400 ring-1 ring-inset ring-white/10">{{mentorado.estagio}}</div>
                       </div>
                     </td>
                     <td class="py-4 pl-0 pr-4 text-sm/6 sm:pr-8 lg:pr-20">
@@ -149,12 +150,14 @@
                         <div class="hidden text-white sm:block">Ativo</div>
                       </div>
                     </td>
-                    <td class="hidden py-4 pl-0 pr-8 text-sm/6 text-gray-400 md:table-cell lg:pr-20">26/03/2025</td>
+                    <td class="hidden py-4 pl-0 pr-8 text-sm/6 text-gray-400 md:table-cell lg:pr-20">{{mentorado.criado_em}}</td>
                     <td class="hidden py-4 pl-0 pr-8 text-sm/6 text-gray-400 md:table-cell lg:pr-20">
                      
-                        Caio Sampaio
+                        {{mentorado.navigator}}
                     </td>
                   </tr>
+
+                  {% endfor %}
                 
               </tbody>
             </table>
