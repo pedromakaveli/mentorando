@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.contrib.messages import constants
 from django.contrib import messages
@@ -58,7 +59,7 @@ def login (request):
         
         if user is not None:
             # A backend authenticated the credentials
-            login(request, user)
+            auth_login(request, user)
             return redirect('mentorados')
             
         else:
