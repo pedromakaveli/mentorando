@@ -4,9 +4,11 @@ from django.contrib.auth.models import User
 from .models import Mentorados
 from .models import Navigators
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
+@login_required
 def mentorados (request):
     if request.method == "GET":
         navigators = Navigators.objects.filter(user=request.user)
