@@ -3,9 +3,10 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from .models import Mentorados
 from .models import Navigators
+from .models import Disponibilidade as DisponibilidadeHorarios
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
+from datetime import datetime
 # Create your views here.
 
 @login_required
@@ -54,4 +55,11 @@ def reunioes (request):
         return render(request, "reunioes.html")
     
     elif request.method == "POST":
-        ...
+        data = request.POST.get("data")
+        data = datetime.strptime(data, '%Y-%m-%dT%H:%M')
+        disponibilidades = DisponibilidadeHorarios(
+            data_inicial = data,
+            mentor=request.user
+        ).save()
+        
+        return HttpResponse(data)
