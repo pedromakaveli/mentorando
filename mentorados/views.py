@@ -47,3 +47,11 @@ def mentorados (request):
         mentorado.save()
         messages.add_message(request, messages.SUCCESS, f"O mentorado {nome} foi cadastrado com sucesso")
         return redirect ("mentorados")
+    
+
+def reunioes (request):
+    if request.method == "GET":
+        return render(request, "reunioes.html")
+    
+    elif request.method == "POST":
+        ...
