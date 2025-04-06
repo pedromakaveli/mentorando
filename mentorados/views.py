@@ -4,9 +4,11 @@ from django.contrib.auth.models import User
 from .models import Mentorados
 from .models import Navigators
 from .models import Disponibilidade as DisponibilidadeHorarios
+from .models import Reuniao
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from datetime import datetime
+from datetime import datetime, timedelta
+from mentorados.auth import valida_token
 # Create your views here.
 
 @login_required
@@ -57,9 +59,64 @@ def reunioes (request):
     elif request.method == "POST":
         data = request.POST.get("data")
         data = datetime.strptime(data, '%Y-%m-%dT%H:%M')
-        disponibilidades = DisponibilidadeHorarios(
-            data_inicial = data,
+        disponibilidades = DisponibilidadeHorarios.objects.filter(
+                    data_inicial__gte=(data - timedelta(minutes=50)),
+                    data_inicial__lte=(data + timedelta(minutes=50))
+                )
+
+        if disponibilidades.exists():
+            messages.add_message(request, messages.ERROR, 'Você já possui uma reunião em aberto.')
+            return redirect('reunioes')
+
+        disponibilidade = DisponibilidadeHorarios(
+            data_inicial=data,
             mentor=request.user
-        ).save()
+
+        )
+        disponibilidade.save()
+
+        messages.add_message(request, messages.SUCCESS, 'Horário disponibilizado com sucesso.')
+        return redirect('reunioes')
+
+def auth(request):
+    if request.method == 'GET':
+        return render(request, 'auth_mentorado.html')
+    
+    else:
+        token = request.POST.get('token')
+
+        if not Mentorados.objects.filter(token=token).exists():
+            messages.add_message(request, messages.ERROR, 'Token inválido')
+            return redirect('auth_mentorado')
         
-        return HttpResponse(data)
+        response = redirect('escolher_dia')
+        response.set_cookie('auth_token', token, max_age=3600)
+        return response
+    
+def escolher_dia(request):
+    if not valida_token(request.COOKIES.get('auth_token')):
+        return redirect('auth_mentorado')
+    if request.method == 'GET':
+        disponibilidades = DisponibilidadeHorarios.objects.filter(
+            data_inicial__gte=datetime.now(),
+            agendado=False
+        ).values_list('data_inicial', flat=True)
+        horarios = []
+        for i in disponibilidades:
+            horarios.append(i.date().strftime('%d-%m-%Y'))
+
+
+        return render(request, 'escolher_dia.html', {'horarios': list(set(horarios))})
+
+def agendar_reuniao(request):
+    if not valida_token(request.COOKIES.get('auth_token')):
+        return redirect('auth_mentorado')
+    if request.method == 'GET':
+        data = request.GET.get("data")
+        data = datetime.strptime(data, '%d-%m-%Y')
+        horarios = DisponibilidadeHorarios.objects.filter(
+            data_inicial__gte=data,
+            data_inicial__lt=data + timedelta(days=1),
+            agendado=False
+        )
+        return render(request, 'agendar_reuniao.html', {'horarios': horarios, 'tags': Reuniao.tag_choices})
